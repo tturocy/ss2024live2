@@ -41,11 +41,12 @@ class Player(BasePlayer):
     response = models.IntegerField()
     is_correct = models.BooleanField()
 
+    @property
+    def dictionary(self):
+        return {"A": 1, "B": 2}
+
     def compute_outcome(self):
-        self.is_correct = (
-                (self.word == "A" and self.response == 1) or
-                (self.word == "B" and self.response == 2)
-        )
+        self.is_correct = (self.response == self.dictionary[self.word])
         if self.is_correct:
             self.payoff = self.subsession.payment_per_correct
 
