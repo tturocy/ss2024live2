@@ -27,7 +27,7 @@ class Subsession(BaseSubsession):
 
     def setup(self):
         self.payment_per_correct = C.PAYMENT_PER_CORRECT
-        word = random.choice("AB")
+        word = "".join(random.choices("AB", k=2))
         for player in self.get_players():
             player.word = word
 
@@ -38,7 +38,8 @@ class Group(BaseGroup):
 
 class Player(BasePlayer):
     word = models.StringField()
-    response = models.IntegerField()
+    response_1 = models.IntegerField()
+    response_2 = models.IntegerField()
     is_correct = models.BooleanField()
 
     @property
@@ -46,7 +47,10 @@ class Player(BasePlayer):
         return {"A": 1, "B": 2}
 
     def compute_outcome(self):
-        self.is_correct = (self.response == self.dictionary[self.word])
+        self.is_correct = (
+            self.response_1 == self.dictionary[self.word[0]] and
+            self.response_2 == self.dictionary[self.word[1]]
+        )
         if self.is_correct:
             self.payoff = self.subsession.payment_per_correct
 
@@ -67,7 +71,7 @@ class Decision(Page):
 
     @staticmethod
     def get_form_fields(player):
-        return ["response"]
+        return ["response_1", "response_2"]
 
     @staticmethod
     def before_next_page(player, timeout_happened):
