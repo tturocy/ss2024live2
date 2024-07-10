@@ -21,7 +21,7 @@ class C(BaseConstants):
     NUM_ROUNDS = 2
     ENDOWMENT = 20
     PRIZE = 20
-    COST_PER_TICKET = 1
+    COST_PER_TICKET = {1: 1, 2: 2}
 
 
 class Subsession(BaseSubsession):
@@ -67,7 +67,7 @@ class Player(BasePlayer):
 
     def setup(self):
         self.endowment = C.ENDOWMENT
-        self.cost_per_ticket = C.COST_PER_TICKET
+        self.cost_per_ticket = C.COST_PER_TICKET[self.id_in_group]
 
 
 # PAGES
