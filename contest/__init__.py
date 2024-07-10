@@ -18,7 +18,7 @@ A simple Tullock contest game with possibly different costs of effort.
 class C(BaseConstants):
     NAME_IN_URL = "contest"
     PLAYERS_PER_GROUP = 2
-    NUM_ROUNDS = 5
+    NUM_ROUNDS = 2
     ENDOWMENT = 20
     PRIZE = 20
     COST_PER_TICKET = 1
