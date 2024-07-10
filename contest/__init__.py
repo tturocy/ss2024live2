@@ -69,6 +69,10 @@ class Player(BasePlayer):
         self.endowment = C.ENDOWMENT
         self.cost_per_ticket = C.COST_PER_TICKET[self.id_in_group]
 
+    @property
+    def coplayer(self):
+        return self.get_others_in_group()[0]
+
 
 # PAGES
 class Intro(Page):
