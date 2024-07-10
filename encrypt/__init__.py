@@ -27,7 +27,7 @@ class Subsession(BaseSubsession):
 
     def setup(self):
         self.payment_per_correct = C.PAYMENT_PER_CORRECT
-        word = "".join(random.choices("AB", k=2))
+        word = "".join(random.choices("AB", k=5))
         for player in self.get_players():
             player.word = word
 
@@ -40,16 +40,29 @@ class Player(BasePlayer):
     word = models.StringField()
     response_1 = models.IntegerField()
     response_2 = models.IntegerField()
+    response_3 = models.IntegerField()
+    response_4 = models.IntegerField()
+    response_5 = models.IntegerField()
     is_correct = models.BooleanField()
+
+    @property
+    def response_fields(self):
+        return ["response_1", "response_2", "response_3", "response_4", "response_5"]
+
+    @property
+    def response_as_list(self):
+        return [self.response_1, self.response_2, self.response_3,
+                self.response_4, self.response_5]
 
     @property
     def dictionary(self):
         return {"A": 1, "B": 2}
 
     def compute_outcome(self):
-        self.is_correct = (
-            self.response_1 == self.dictionary[self.word[0]] and
-            self.response_2 == self.dictionary[self.word[1]]
+        self.is_correct = all(
+            response == self.dictionary[letter]
+            for (response, letter) in zip(self.response_as_list, self.word,
+                                          strict=True)
         )
         if self.is_correct:
             self.payoff = self.subsession.payment_per_correct
@@ -71,7 +84,7 @@ class Decision(Page):
 
     @staticmethod
     def get_form_fields(player):
-        return ["response_1", "response_2"]
+        return player.response_fields
 
     @staticmethod
     def before_next_page(player, timeout_happened):
