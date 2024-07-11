@@ -23,15 +23,27 @@ class C(BaseConstants):
     NUM_ROUNDS = 2
     PAYMENT_PER_CORRECT = Currency(0.10)
     TIME_FOR_TASK = 100
+    LOOKUP_TABLES = [
+        "ZYXJIUTLKQSRNWVHGFEDMOPCBA",
+        "ZYXWVUTSRQPONMLKJIHGFEDCBA",
+        "BADCFEHGJILKNMPORQTSVUXWZY",
+    ]
 
 
 class Subsession(BaseSubsession):
     payment_per_correct = models.CurrencyField()
+    random_seed = models.IntegerField()
 
     def setup(self):
+        if self.round_number == 1 and "encryption_random_seed" in self.session.config:
+            self.random_seed = self.session.config["encryption_random_seed"]
+            random.seed(self.random_seed)
         self.payment_per_correct = C.PAYMENT_PER_CORRECT
         word = "".join(random.choices(string.ascii_uppercase, k=5))
-        lookup_table = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        # Selecting from a predefined list
+        # lookup_table = random.choice(C.LOOKUP_TABLES)
+        # A random permutation
+        lookup_table = "".join(random.sample(string.ascii_uppercase, 26))
         for player in self.get_players():
             player.word = word
             player.lookup_table = lookup_table
