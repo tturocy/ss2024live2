@@ -6,7 +6,10 @@
 Your endowment is {{ player.endowment }}.  Your cost per ticket is {{ player.cost_per_ticket }}.
 
 
-    {{ formfields }}
+{{ for field in form }}
+  {{ field }}
+{{ endfor }}
+
     {{ next_button }}
 
 {{ endblock }}

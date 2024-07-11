@@ -1,13 +1,64 @@
 {{ block title }}
     Word number {{ player.round_number }}
 {{ endblock }}
+
+{{ block styles }}
+<style>
+.otree-timer  {
+    display: none;
+}
+.timer-block {
+    background: #ccc;
+}
+</style>
+{{ endblock }}
+
 {{ block content }}
 
-Dictionary: {{ player.dictionary }}
-<br/>
-Word to encode: {{ player.word }}
+<p class="text-center p-2 timer-block">
+   You have &#9203; <b><span class="otree-timer__time-left"></span></b> remaining to encrypt words.
+</p>
 
-    {{ formfields }}
-    {{ next_button }}
+<div class="card">
+    <div class="card-body">
+<table class="table">
+    <tr>
+        {{ for letter, value in player.dictionary.items }}
+        <td class="text-center">
+            {{ letter }}
+        </td>
+        {{ endfor }}
+    </tr>
+    <tr>
+        {{ for letter, value in player.dictionary.items }}
+        <td class="text-center">
+            {{ value }}
+        </td>
+        {{ endfor }}
+    </tr>
+</table>
+
+    </div>
+</div>
+
+
+<p class="fw-bold text-center fs-3">
+Word to encode: {{ player.word }}
+</p>
+
+<div class="row">
+    {{ for field in form }}
+    <div class="col">
+      {{ field }}
+    </div>
+{{ endfor }}
+</div>
+
+<div class="row m-3 justify-content-center">
+    <button class="otree-btn-next btn btn-primary w-50">
+        Confirm
+    </button>
+</div>
+
 
 {{ endblock }}
