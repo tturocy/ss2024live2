@@ -1,4 +1,5 @@
 import random
+import string
 import time
 
 from otree.api import (
@@ -29,9 +30,11 @@ class Subsession(BaseSubsession):
 
     def setup(self):
         self.payment_per_correct = C.PAYMENT_PER_CORRECT
-        word = "".join(random.choices("AB", k=5))
+        word = "".join(random.choices(string.ascii_uppercase, k=5))
+        lookup_table = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         for player in self.get_players():
             player.word = word
+            player.lookup_table = lookup_table
 
 
 class Group(BaseGroup):
@@ -41,6 +44,7 @@ class Group(BaseGroup):
 class Player(BasePlayer):
     time_for_task = models.IntegerField()
     started_task_at = models.FloatField()
+    lookup_table = models.StringField()
     word = models.StringField()
     response_1 = models.IntegerField()
     response_2 = models.IntegerField()
@@ -60,7 +64,10 @@ class Player(BasePlayer):
 
     @property
     def dictionary(self):
-        return {"A": 1, "B": 2}
+        lookup = {}
+        for letter in string.ascii_uppercase:
+            lookup[letter] = self.lookup_table.index(letter) + 1
+        return lookup
 
     def start_task(self):
         self.time_for_task = self.session.config.get("time_for_encryption_task", C.TIME_FOR_TASK)
