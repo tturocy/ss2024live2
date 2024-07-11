@@ -1,4 +1,5 @@
 import random
+import time
 
 from otree.api import (
     BaseConstants,
@@ -20,6 +21,7 @@ class C(BaseConstants):
     PLAYERS_PER_GROUP = None
     NUM_ROUNDS = 2
     PAYMENT_PER_CORRECT = Currency(0.10)
+    TIME_FOR_TASK = 100
 
 
 class Subsession(BaseSubsession):
@@ -37,6 +39,8 @@ class Group(BaseGroup):
 
 
 class Player(BasePlayer):
+    time_for_task = models.IntegerField()
+    started_task_at = models.FloatField()
     word = models.StringField()
     response_1 = models.IntegerField()
     response_2 = models.IntegerField()
@@ -57,6 +61,13 @@ class Player(BasePlayer):
     @property
     def dictionary(self):
         return {"A": 1, "B": 2}
+
+    def start_task(self):
+        self.time_for_task = C.TIME_FOR_TASK
+        self.started_task_at = time.time()
+
+    def get_remaining_time(self):
+        return self.in_round(1).time_for_task - (time.time() - self.in_round(1).started_task_at)
 
     def compute_outcome(self, timeout_happened):
         if timeout_happened:
@@ -83,6 +94,10 @@ class Intro(Page):
     def is_displayed(player: Player) -> bool:
         return player.round_number == 1
 
+    @staticmethod
+    def before_next_page(player, timeout_happened):
+        player.start_task()
+
 
 class Decision(Page):
     form_model = "player"
@@ -93,7 +108,7 @@ class Decision(Page):
 
     @staticmethod
     def get_timeout_seconds(player):
-        return 10
+        return player.get_remaining_time()
 
     @staticmethod
     def before_next_page(player, timeout_happened):
