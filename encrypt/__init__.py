@@ -63,7 +63,7 @@ class Player(BasePlayer):
         return {"A": 1, "B": 2}
 
     def start_task(self):
-        self.time_for_task = C.TIME_FOR_TASK
+        self.time_for_task = self.session.config.get("time_for_encryption_task", C.TIME_FOR_TASK)
         self.started_task_at = time.time()
 
     def get_remaining_time(self):

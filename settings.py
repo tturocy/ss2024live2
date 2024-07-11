@@ -28,6 +28,7 @@ SESSION_CONFIGS = [
             "encrypt",
         ],
         num_demo_participants=2,
+        time_for_encryption_task=50,
     ),
 ]
 
