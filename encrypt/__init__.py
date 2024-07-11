@@ -58,12 +58,17 @@ class Player(BasePlayer):
     def dictionary(self):
         return {"A": 1, "B": 2}
 
-    def compute_outcome(self):
-        self.is_correct = all(
-            response == self.dictionary[letter]
-            for (response, letter) in zip(self.response_as_list, self.word,
-                                          strict=True)
-        )
+    def compute_outcome(self, timeout_happened):
+        if timeout_happened:
+            for response in self.response_fields:
+                setattr(self, response, None)
+            self.is_correct = False
+        else:
+            self.is_correct = all(
+                response == self.dictionary[letter]
+                for (response, letter) in zip(self.response_as_list, self.word,
+                                              strict=True)
+            )
         if self.is_correct:
             self.payoff = self.subsession.payment_per_correct
 
@@ -87,8 +92,12 @@ class Decision(Page):
         return player.response_fields
 
     @staticmethod
+    def get_timeout_seconds(player):
+        return 10
+
+    @staticmethod
     def before_next_page(player, timeout_happened):
-        player.compute_outcome()
+        player.compute_outcome(timeout_happened)
 
 
 class Outcome(Page):
